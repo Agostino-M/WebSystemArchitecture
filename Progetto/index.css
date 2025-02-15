@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#main {
+    width: 100%;
+}
+
+#main {
+    transition: opacity 1s ease-in-out;
+    opacity: 1;
+}
+
+.loading {
+    opacity: 0;
+}

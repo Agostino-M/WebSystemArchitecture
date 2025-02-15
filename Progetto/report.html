@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <title>Reportistica Cartelloni</title>
+    <link type="image/png" sizes="16x16" rel="icon"
+        href="https://img.icons8.com/?size=100&id=43165&format=png&color=000000">
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #6c63ff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 900px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #6c63ff;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+
+        function getReport() {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var idImpianto = $('#idImpianto').val();
+            var idCartellone = $('#idCartellone').val();
+            var idPalinsesto = $('#idPalinsesto').val();
+
+            $.ajax({
+                url: 'http://localhost:8080/getImpressioni',
+                type: 'GET',
+                data: {
+                    startDate: startDate || null,
+                    endDate: endDate || null,
+                    idImpianto: idImpianto || null,
+                    idCartellone: idCartellone || null,
+                    idPalinsesto: idPalinsesto || null
+                },
+                success: function (data) {
+                    console.log(data);
+                    populateTable(data);
+                    updateNumeroRisultati(data.length);
+                },
+                error: function (xhr, status, error) {
+                    updateNumeroRisultati(0);
+                    populateTable(null);
+                }
+            });
+        }
+
+        function populateTable(data) {
+            var table = $('#reportTable tbody');
+            table.empty();
+            data.forEach(function (item) {
+                var row = '<tr>';
+                row += '<td>' + item.descrizioneImpianto + '</td>';
+                row += '<td>' + item.nomePalinsesto + '</td>';
+                row += '<td>' + item.nomeCartellone + '</td>';
+                row += '<td>' + item.durataTot + '</td>';
+                row += '<td>' + item.nImpressioni + '</td>';
+                row += '</tr>';
+                table.append(row);
+            });
+        }
+
+        $(document).ready(function () {
+            getReport();
+            loadAllPalinsesti();
+            loadAllImpianti();
+            loadAllCartelloni();
+
+            $('#generateReport').on('click', function (e) {
+                console.log("sending requesto to server");
+                e.preventDefault();
+                getReport();
+            });
+        });
+
+        function loadAllPalinsesti() {
+            $.ajax({
+                url: 'http://localhost:8080/getAllPalinsesti',
+                success: function (response) {
+                    const options = response.map(item => `<option value="${item.idPalinsesto}">${item.nome}</option>`);
+                    $('#idPalinsesto').append(options);                    
+                },
+                error: function (xhr, status, error) {
+                    const errore = $('#errore');
+                    console.error('Errore nel caricamento dei palinsesti:', status, error);
+                    errore.html('Errore nel caricamento dei palinsesti').css('visibility', 'visible');
+                }
+            });
+        }
+
+        function loadAllCartelloni() {
+            $.ajax({
+                url: 'http://localhost:8080/getAllCartelloni',
+                success: function (response) {
+                    const options = response.map(item => `<option value="${item.id}">${item.nome}</option>`);
+                    $('#idCartellone').append(options);                    
+                },
+                error: function (xhr, status, error) {
+                    const errore = $('#errore');
+                    console.error('Errore nel caricamento dei palinsesti:', status, error);
+                    errore.html('Errore nel caricamento dei palinsesti').css('visibility', 'visible');
+                }
+            });
+        }
+
+        function loadAllImpianti() {
+            $.ajax({
+                url: 'http://localhost:8080/getAllImpianti',
+                success: function (response) {
+                    const options = response.map(item => `<option value="${item.idImpianto}">${item.descrizione}</option>`);
+                    $('#idImpianto').append(options);                    
+                },
+                error: function (xhr, status, error) {
+                    const errore = $('#errore');
+                    console.error('Errore nel caricamento dei palinsesti:', status, error);
+                    errore.html('Errore nel caricamento dei palinsesti').css('visibility', 'visible');
+                }
+            });
+        }
+
+        function updateNumeroRisultati(numeroRisultati) {
+            $('#numeroRisultati').text('Numero di risultati: ' + numeroRisultati);
+        }
+
+    </script>
+</head>
+
+<body>
+    <h1>Reportistica Cartelloni</h1>
+    <form>
+        <input type="date" id="startDate" name="startDate" required>
+        <input type="date" id="endDate" name="endDate" required>
+        <select id="idImpianto" name="idImpianto">
+            <option value="">Tutti gli impianti</option>
+        </select>
+        <select id="idCartellone" name="idCartellone">
+            <option value="">Tutti i cartelloni</option>
+        </select>
+        <select id="idPalinsesto" name="idPalinsesto">
+            <option value="">Tutti i palinsesti</option>
+        </select>
+        <button id="generateReport">Genera Report</button>
+    </form>
+    <div id="numeroRisultati"></div>
+    <table id="reportTable">
+        <thead>
+            <tr>
+                <th data-sort="descrizioneImpianto">Descrizione Impianto</th>
+                <th data-sort="nomePalinsesto">Nome Palinsesto</th>
+                <th data-sort="nomeCartellone">Nome Cartellone</th>
+                <th data-sort="durataTot">Durata Totale</th>
+                <th data-sort="nImpressioni">Numero Impressioni</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</body>
+
+</html>

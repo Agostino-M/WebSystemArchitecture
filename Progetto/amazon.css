@@ -1,0 +1,56 @@
+@import url(common.css);
+
+body {
+    background-image: url(img/background.jpg);
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+h2 {
+    margin-top: 0;
+    color: white
+}
+
+.prodotti {
+    display: grid;
+    background-color: #232F3E;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.griglia-prodotti {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+}
+
+.prodotto {
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    text-align: center;
+    height: 200px;
+    border-radius: 10px;
+}
+
+.prodotto img {
+    width: auto;
+    height: 110px;
+    margin: 15px 15px 10px 15px;
+}
+
+.prodotto h3 {
+    margin: 0;
+    font-weight: bold;
+}
+
+.prodotto .prezzo {
+    color: #f00;
+}
+
+.griglia-prodotti {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, auto);
+}
+

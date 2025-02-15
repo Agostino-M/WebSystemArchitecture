@@ -1,0 +1,34 @@
+Assignment 3: consegna entro il 10 maggio alle 23:59.
+
+Sistema monitoraggio - webapp jakarta:
+Scrivete il sistema di monitoraggio degli impianti, una applicazione Jakarta EE con una
+servlet che riceve un codice impianto, un codice palinsesto, un codice cartellone e la durata di visualizzazione
+e li memorizza in una tabella di un database relazionale assieme al timestamp corrente.
+
+Sistema gestione - spring:
+Nella stessa web application prevedete un’altra servlet che restituisce una pagina contenente gli id degli impianti che
+hanno inviato segnalazioni negli ultimi due minuti e gli id degli impianti che non l’hanno fatto, riportando per ciascun
+impianto il timestamp dell’ultimo segnale inviato al sistema di monitoraggio (questi dati si ottengono con semplici query SQL).
+
+Nel database, oltre alla tabella che memorizza le segnalazioni ricevute dai vari impianti (idsegnalazione, idimpianto,
+idpalinsesto, idcartellone, durata, timestamp),
+avrete bisogno di una tabella coi dati degli impianti (idimpianto, descrizione, latitudine, longitudine).
+
+Nella pagina HTML/Javascript già sviluppata per l’assignment 2 dovrete quindi aggiungere la funzionalità Javascript di
+inviare in maniera asincrona una segnalazione al sistema di monitoraggio chiamando la servlet e passandole i parametri necessari.
+
+Replicate la pagina di cui sopra per simulare i diversi impianti e in ciascuna copia della pagina modificate soltanto il
+palinsesto da caricare e l’idimpianto (nella versione finale ci sarà una sola pagina per tutti gli impianti che verrà
+generata automaticamente con dati presi dal DB di gestione).
+
+La pagina generata dal sistema di monitoraggio che mostra lo stato di tutti gli impianti dovrà visualizzare gli impianti
+su mappa per i gruppi con un simbolo diverso per attivi e inattivi.
+Per progetti singoli è sufficiente l’elenco testuale degli impianti attivi e inattivi.
+
+Note:
+1.	Potreste fare il sistema di gestione come webapp Spring boot su porta 8080, il sistema di monitoraggio come webapp
+    Jakarta EE su porta 8000 e il DB MYSQL su porta 3306.
+2.	Potreste avere qualche problema di cross origin quando fate la richiesta dalla pagina del LED wall, che si trova sul
+    sistema di gestione, al sistema di monitoraggio, la soluzione è in un header della response, potrete trovarla
+    facilmente cercando su Internet.
+

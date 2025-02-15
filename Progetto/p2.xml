@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-model href="structure.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<impianto id="2">
+    <palinsesto id="2">
+        <cartellone id="4">
+            <nome>Hamburger</nome>
+            <durata>5</durata>
+            <source>hamburger.html</source>
+        </cartellone>
+        <cartellone id="3">
+            <nome>Be Consulting</nome>
+            <durata>5</durata>
+            <source>be_consulting.html</source>
+        </cartellone>
+        <cartellone id="1">
+            <nome>Alfa Romeo</nome>
+            <durata>5</durata>
+            <source>alfa_romeo.html</source>
+        </cartellone>
+        <cartellone id="2">
+            <nome>Amazon</nome>
+            <durata>10</durata>
+            <source>amazon.html</source>
+        </cartellone>
+        <cartellone id="5">
+            <nome>Divani</nome>
+            <durata>5</durata>
+            <source>divani.html</source>
+        </cartellone>
+    </palinsesto>
+</impianto>

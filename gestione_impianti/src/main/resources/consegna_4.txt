@@ -1,0 +1,28 @@
+Assignment 4: consegna entro il 5 giugno alle 23:59.
+
+Il sistema di gestione che avete sviluppato finora ha servito pagine statiche che tramite Javascript caricavano
+i diversi cartelloni sull’impiantoDto
+Adesso aggiungeremo le funzionalità dinamiche al sistema.
+
+Per cominciare dovete aggiungere alla tabella degli impianti
+    - il nome/path del file palinsesto che andrà in esecuzione su ciascun impiantoDto
+    - il relativo stato (attivo/inattivo).
+
+Modificate quindi la pagina principale del LED wall in modo che legga come parametro l’id dell’impiantoDto e mandi
+in esecuzione il palinsesto associato a quell’id.
+(praticamente ogni impiantoDto accede a una URL del tipo http://mydomain.com/wsda?id=123 e il sistema lo manda
+a una pagina che carica il palinsesto associato all’impiantoDto 123, ammesso che sia attivo).
+
+Create quindi una pagina per la gestione degli impianti in cui verranno visualizzati in forma tabellare
+tutti gli impianti e in cui ci sarà la possibilità di modificare il palinsesto associato a ciascun impiantoDto
+scegliendo fra quelli disponibili e di modificare lo stato dell’impiantoDto (attivo/inattivo).
+
+Potete utilizzare una tabella aggiuntiva dove avete memorizzato i path di tutti i palinsesti per scegliere
+il palinsesto da associare all’impiantoDto.
+
+Create infine una pagina per la reportistica che, con un’opportuna interfaccia grafica, vi permetterà di
+visualizzare le impressioni di ciascun cartellone in un determinato intervallo temporale.
+Siete liberi di scegliere come strutturare questa pagina e di aggiungere ulteriori criteri di ricerca.
+
+I gruppi, dovranno limitare l’accesso alla pagina di gestione impianti mediante login/password e
+prevedere la possibilità di aggiungere nuovi impianti e modificare tutti i parametri di quelli già presenti.

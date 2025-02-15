@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <title>Sistema Monitoraggio</title>
+    <link type="image/png" sizes="16x16" rel="icon"
+        href="https://img.icons8.com/?size=100&id=43165&format=png&color=000000">
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 900px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #6c63ff;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .attivo {
+            color: green
+        }
+
+        .inattivo {
+            color: red
+        }
+
+        #errore {
+            color: red;
+            visibility: hidden;
+        }
+
+        select {
+            background-color: #fff;
+            border: 0px solid #ccc;
+            border-width: 0 0 1px 0;
+            border-radius: 4px;
+            padding: 10px 35px 10px 15px;
+            font-size: 14px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+
+        select:hover {
+            border-color: #888;
+        }
+
+        select:focus {
+            border-color: #6c63ff;
+            box-shadow: 0 0 5px rgba(108, 99, 255, 0.5);
+        }
+
+        /* Per allineare l'icona dropdown */
+        select::-ms-expand {
+            display: none;
+        }
+
+        /* Stile per select nelle versioni più vecchie di IE e Edge */
+        select::-ms-expand {
+            display: none;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function updateNumeroRisultati(numeroRisultati) {
+            $('#numeroRisultati').text('Numero di risultati: ' + numeroRisultati);
+        }
+
+        stato_map = ['inattivo', 'attivo']
+
+        function getImpiantiStatus() {
+            $.ajax({
+                url: 'http://localhost:8080/getAllImpianti',
+                type: 'GET',
+                success: function (data) {
+                    console.log(data);
+                    const table = $('#monitorTable');
+                    table.find('tr:gt(0)').remove(); // Rimuove tutte le righe eccetto la prima (l'intestazione)
+                    data.forEach(function (item) {
+                        const ultimaSegnalazione = item.ultimaSegnalazione == null ? "---" : item.ultimaSegnalazione;
+                        const stato_bool = item.attivo ? 1 : 0;
+                        const stato_opposite = item.attivo ? 0 : 1;
+
+                        let table_content = '<tr>';
+                        // ID
+                        table_content += '<td>' + item.idImpianto + '</td>';
+                        // Descrizione
+                        table_content += '<td>' + item.descrizione + '</td>';
+                        // Posizione
+                        table_content += '<td>' + item.latitudine + ', ' + item.longitudine + '</td>';
+                        // Id Palinsesto
+                        table_content += '<td><select class="palinsesto" data-id="' + item.idImpianto + '"></select></td>';
+                        // Stato - editabile
+                        // la label deve essere attivo o inattivo, il valore 0 o 1
+                        table_content += '<td class="' + (item.attivo ? 'attivo' : 'inattivo') + '"><select class="stato" data-id="' + item.idImpianto + '">';
+                        table_content += '<option value="' + stato_bool + '" selected>' + stato_map[stato_bool] + '</option>';
+                        table_content += '<option value="' + stato_opposite + '">' + stato_map[stato_opposite] + '</option>';
+                        table_content += '</select></td>';
+                        table_content += '</tr>';
+                        table.append(table_content);
+                    });
+                    updateNumeroRisultati(data.length);
+                    loadAllPalinsesti(data);
+                },
+                error: function (xhr, status, error) {
+                    let errore = $('#errore');
+                    updateNumeroRisultati(data.length);
+                    console.error('Errore nella lettura dei dati:', status, error);
+                    errore.html('Errore nella lettura dei dati');
+                    errore.show();
+                }
+            });
+        }
+
+        function loadAllPalinsesti(impianti) {
+            $.ajax({
+                url: 'http://localhost:8080/getAllPalinsesti',
+                success: function (response) {
+                    const options = response.map(item => `<option value="${item.idPalinsesto}">${item.nome}</option>`);
+                    $('select.palinsesto').each(function () {
+                        const idImpianto = $(this).data('id');
+                        const impianto = impianti.find(imp => imp.idImpianto == idImpianto);
+                        $(this).html(options).val(impianto.idPalinsesto);
+                    });
+                    addChangeListeners();
+                },
+                error: function (xhr, status, error) {
+                    const errore = $('#errore');
+                    console.error('Errore nel caricamento dei palinsesti:', status, error);
+                    errore.html('Errore nel caricamento dei palinsesti').css('visibility', 'visible');
+                }
+            });
+        }
+
+        function addChangeListeners() {
+            $('select.palinsesto').on('change', function () {
+                const idImpianto = $(this).data('id');
+                const idPalinsesto = $(this).val();
+                updateImpianto(idImpianto, { idPalinsesto: idPalinsesto });
+            });
+
+            $('select.stato').on('change', function () {
+                const idImpianto = $(this).data('id');
+                const isAttivo = $(this).val() == '1';
+                updateImpianto(idImpianto, { isAttivo: isAttivo });
+            });
+        }
+
+        function updateImpianto(idImpianto, updateData) {
+            console.log(updateData)
+            $.ajax({
+                url: 'http://localhost:8080/updateImpianto/' + idImpianto,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(updateData),
+                success: function (response) {
+                    console.log('Impianto aggiornato:', response);
+                    getImpiantiStatus();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Errore durante l'aggiornamento dell'impianto:", status, error);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            getImpiantiStatus();
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Gestione impianti</h1>
+    <div id="numeroRisultati"></div>
+    <table id="monitorTable">
+        <tr>
+            <th>ID</th>
+            <th>Descrizione</th>
+            <th>Posizione</th>
+            <th>Id Palinsesto</th>
+            <th>Stato</th>
+        </tr>
+    </table>
+    <p id="errore">Errore generico</p>
+</body>
+
+</html>

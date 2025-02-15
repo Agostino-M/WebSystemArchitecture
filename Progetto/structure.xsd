@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="impianto" type="impiantoType"/>
+    <xs:complexType name="cartelloneType">
+        <xs:sequence>
+            <xs:element name="nome">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Alfa Romeo"/>
+                        <xs:enumeration value="Amazon"/>
+                        <xs:enumeration value="Be Consulting"/>
+                        <xs:enumeration value="Divani"/>
+                        <xs:enumeration value="Hamburger"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element type="xs:positiveInteger" name="durata"/>
+            <xs:element name="source">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="(.+)\.html"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:positiveInteger" name="id"/>
+    </xs:complexType>
+    <xs:complexType name="palinsestoType">
+        <xs:sequence>
+            <xs:element type="cartelloneType" name="cartellone" maxOccurs="5" minOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute type="xs:positiveInteger" name="id"/>
+    </xs:complexType>
+    <xs:complexType name="impiantoType">
+        <xs:sequence>
+            <xs:element type="palinsestoType" name="palinsesto" maxOccurs="5" minOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute type="xs:positiveInteger" name="id"/>
+    </xs:complexType>
+</xs:schema>

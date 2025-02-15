@@ -1,0 +1,54 @@
+CREATE DATABASE segnalazioni_impianti;
+USE segnalazioni_impianti;
+CREATE TABLE Segnalazioni
+(
+    id_segnalazione INT PRIMARY KEY AUTO_INCREMENT,
+    id_impianto     INT      NOT NULL,
+    id_palinsesto   INT,
+    id_cartellone   INT,
+    durata          INT      NOT NULL,
+    timestamp       DATETIME NOT NULL,
+    FOREIGN KEY (id_impianto) REFERENCES Impianti (id_impianto)
+);
+CREATE TABLE Impianti
+(
+    id_impianto INT PRIMARY KEY AUTO_INCREMENT,
+    descrizione VARCHAR(255) NOT NULL,
+    latitudine  FLOAT        NOT NULL,
+    longitudine FLOAT        NOT NULL
+);
+
+CREATE TABLE Palinsesti
+(
+    id_palinsesto INT PRIMARY KEY AUTO_INCREMENT,
+    nome          VARCHAR(255) NOT NULL,
+    path          VARCHAR(50)  NOT NULL
+);
+
+alter table Impianti
+    add is_attivo     boolean NOT NULL,
+    add id_palinsesto int     NOT NULL,
+    add constraint FOREIGN KEY (id_palinsesto) REFERENCES Palinsesti (id_palinsesto);
+
+alter table Segnalazioni
+    add constraint FOREIGN KEY (id_palinsesto) REFERENCES Palinsesti (id_palinsesto);
+
+INSERT INTO impianti (descrizione, latitudine, longitudine, id_palinsesto, is_attivo)
+VALUES ('Via Giuseppe Garibaldi, Trapani', 38.017898, 12.515292, 1, TRUE),
+       ('Via Fardella, Trapani', 38.017459, 12.528560, 2, TRUE),
+       ('Spiaggia di San Vito Lo Capo', 38.176006, 12.737951, 3, FALSE);
+
+CREATE TABLE Cartellone
+(
+    id     INT PRIMARY KEY AUTO_INCREMENT,
+    nome   VARCHAR(255) NOT NULL,
+    source VARCHAR(255) NOT NULL
+);
+
+INSERT INTO Cartellone (nome, source)
+VALUES ('Alfa Romeo', 'alfa_romeo.html'),
+       ('Amazon', 'amazon.html'),
+       ('Be Consulting', 'be_consulting.html'),
+       ('Hamburger', 'hamburger.html'),
+       ('Divani', 'divani.html');
+

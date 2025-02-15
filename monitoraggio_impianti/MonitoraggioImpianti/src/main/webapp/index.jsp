@@ -1,0 +1,119 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema Monitoraggio</title>
+    <link type="image/png" sizes="16x16" rel="icon" href="https://img.icons8.com/?size=100&id=43165&format=png&color=000000">
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 900px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #6c63ff;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .attivo {
+            color: green
+        }
+
+        .inattivo {
+            color: red
+        }
+
+        #errore {
+            color: red;
+            visibility: hidden;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function updateNumeroRisultati(numeroRisultati) {
+            $('#numeroRisultati').text('Numero di risultati: ' + numeroRisultati);
+        }
+
+        function getImpiantiStatus() {
+            $.ajax({
+                url: 'http://localhost:8080/getImpiantiStatus',
+                type: 'GET',
+                success: function (data) {
+                    let table = $('#monitorTable');
+                    table.find('td').parent('tr').remove()
+                    data.forEach(function (item) {
+                        let ultimaSegnalazione = item.ultimaSegnalazione == null ? "---" : item.ultimaSegnalazione;
+                        table.append('<tr><td>' + item.idImpianto + '</td><td>' + item.descrizione + '</td><td>'
+                            + item.latitudine + ', ' + item.longitudine + '</td><td>' + ultimaSegnalazione
+                            + '</td><td class="' + item.stato + '">' + item.stato + '</td></tr>');
+                    });
+                    updateNumeroRisultati(data.length);
+
+                },
+                error: function (xhr, status, error) {
+                    let errore = $('#errore');
+                    console.error('Errore nella lettura dei dati:', status, error);
+                    errore.html('Errore nella lettura dei dati')
+                    errore.show()
+                }
+            });
+        }
+        $(document).ready(function() {
+            getImpiantiStatus()
+            setInterval(getImpiantiStatus, 60000);
+        });
+
+    </script>
+</head>
+<body>
+<h1>Monitor impianti</h1>
+<div id="numeroRisultati"></div>
+<table id="monitorTable">
+    <tr>
+        <th>ID</th>
+        <th>Descrizione</th>
+        <th>Posizione</th>
+        <th>Ultima Segnalazione</th>
+        <th>Stato</th>
+    </tr>
+</table>
+<p id="errore">Errore generico</p>
+</body>
+</html>
